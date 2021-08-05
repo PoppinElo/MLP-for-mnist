@@ -53,10 +53,6 @@ Y = np.zeros_like(L2)
 dL1 = np.zeros_like(L1)
 dL2 = np.zeros_like(L2)
 
-# defining loss function #
-mean_square = False
-cross_entropy = True
-
 # preparing plots #
 fig, axs = plt.subplots(2,5)
 nnComps = np.zeros((28,28,OUTPUT_LENGTH))
@@ -83,8 +79,7 @@ for t in range(TRAINING_TIME):
     Y = softmax(L2)
     
     # backprop #
-    #if(mean_square): dL2 = Y * (1 - Y) * (Y - T)
-    if(cross_entropy): dL2 = - trainT * (1 - Y)
+    dL2 = (Y - trainT)
     dW2 = np.dot(L1.T,dL2) / TRAINING_SIZE
     dB2 = np.sum(dL2,axis=0) / TRAINING_SIZE
     
@@ -99,8 +94,7 @@ for t in range(TRAINING_TIME):
     B2 -= e * dB2
     
     # calculating loss #
-    if(mean_square): train_loss = np.mean(np.sum((Y - trainT)**2,axis=1))
-    if(cross_entropy): train_loss = np.mean(np.sum(-trainT * np.log(Y),axis=1))
+    train_loss = np.mean(np.sum(-trainT * np.log(Y),axis=1))
     recLoss[t] = train_loss
     # printing loss
     printLoss = "Train Loss = "+str(train_loss)+" -- Test Loss = "+str(genTestLoss())
